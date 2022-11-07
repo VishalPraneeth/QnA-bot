@@ -325,4 +325,26 @@ def dispatch(global_vars, intent_request):
         return get_video_id_intent(global_vars, intent_request)
 
     raise Exception(f"Intent with name {intent_name} not supported")
-            
+
+
+def lambda_handler(event, context):
+    """
+    Entry point for all processing. Load the global_vars
+    :return: A dictionary of tagging status
+    :rtype: json
+    """
+    """
+    Can Override the global variables using Lambda Environment Parameters
+    """
+    global_vars = set_global_vars()
+    
+    resp = {'statusCode': 200, "status": False, "error_message" : '' }
+
+    resp_chk(global_vars.get('status'), global_vars.get('error_message'))  
+
+    # logger.debug(f"event.bot.name={event['bot']['name']}")
+
+    return dispatch(global_vars, event)
+
+if __name__ == '__main__':
+    lambda_handler(None, None)
