@@ -33,3 +33,19 @@ def set_global_vars():
     except Exception as e:
         logger.error(f"ERROR: {str(e)}")
     return global_vars
+
+
+def resp_chk(resp_status: bool, resp_err: str):
+    # Check and continue if no errors
+    if not resp_status:
+        logger.error(f"ERROR: {resp_err}")
+
+
+def read_from_file(filename):
+    with open(filename) as json_file:
+        data = json.load(json_file)
+    return data
+
+
+def safe_div(n, d):
+    return n / d if d else 0    
