@@ -310,4 +310,19 @@ def get_video_id_intent(global_vars: dict, intent_request: dict) -> dict:
         'Fulfilled',
         {'contentType': 'PlainText', 'content': 'Have a look at these demonstrations from #Valaxy'},
         s2_v_ids
-    )    
+    )
+
+def dispatch(global_vars, intent_request):
+    """
+    Called when the user specifies an intent for this bot.
+    """
+    logger.debug(f"dispatch userId={intent_request['userId']}, intentName={intent_request['currentIntent']['name']}")
+
+    intent_name = intent_request['currentIntent']['name']
+
+    # Dispatch to your bot's intent handlers
+    if intent_name == 'get_video_id_intent':
+        return get_video_id_intent(global_vars, intent_request)
+
+    raise Exception(f"Intent with name {intent_name} not supported")
+            
