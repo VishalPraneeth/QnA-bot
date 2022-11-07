@@ -89,3 +89,15 @@ def delegate(session_attributes, slots):
             'slots': slots
         }
     }
+
+def confirm_intent(session_attributes, intent_name, slots, message, response_card):
+    return {
+        'sessionAttributes': session_attributes,
+        'dialogAction': {
+            'type': 'ConfirmIntent',
+            'intentName': intent_name,
+            'slots': slots,
+            'message': message,
+            'responseCard': response_card
+        }
+    }
