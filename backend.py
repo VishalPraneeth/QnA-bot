@@ -48,4 +48,20 @@ def read_from_file(filename):
 
 
 def safe_div(n, d):
-    return n / d if d else 0    
+    return n / d if d else 0
+
+def get_slots(intent_request):
+    return intent_request['currentIntent']['slots']
+
+
+def elicit_slot(session_attributes, intent_name, slots, slot_to_elicit, message):
+    return {
+        'sessionAttributes': session_attributes,
+        'dialogAction': {
+            'type': 'ElicitSlot',
+            'intentName': intent_name,
+            'slots': slots,
+            'slotToElicit': slot_to_elicit,
+            'message': message
+        }
+    }
