@@ -22,10 +22,10 @@ def set_global_vars():
     """
     global_vars = {'status': False, 'error_message': ''}
     try:
-        global_vars['Owner']                = "Miztiik"
+        global_vars['Owner']                = "Vishal"
         global_vars['Environment']          = "Test"
         global_vars['region_name']          = "us-east-1"
-        global_vars['tag_key']              = "Valaxy-HelpDesk-Bot"
+        global_vars['tag_key']              = "MyQnA-Bot"
         global_vars['faq_db_fname']         = "./data/val.json"
         global_vars['ddb_table_name']       = "valaxy-butler-queries"
         global_vars['update_ddb']           = False
