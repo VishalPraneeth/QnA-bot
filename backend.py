@@ -225,3 +225,89 @@ def close(session_attributes, fulfillment_state, message_content):
         }
     }
     return response
+
+def get_video_id_intent(global_vars: dict, intent_request: dict) -> dict:    
+    resp = { "status": False, "error_message": "", 'id_lst': [] }
+
+    # Slots are dictionary
+    slots = intent_request['currentIntent']['slots']
+    output_session_attributes = intent_request['sessionAttributes'] if intent_request['sessionAttributes'] is not None else {}
+    # If no slots were matched return
+    if not slots['slot_one_svc']:
+        return elicit_slot(output_session_attributes, 
+                            intent_request['currentIntent']['name'],
+                            slots,
+                            'slot_one_svc',
+                            f"Your query does not match any AWS Service found. Please try again"
+                            )
+    # Update Dynamo only if user wants to.
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    if global_vars.get('update_ddb'):
+        # Insert / Update Dynamodb about search query
+        item = { 'search_query': slots['slot_one_svc'].lower(),
+                 'utterance': intent_request.get('inputTranscript'),
+                 'user_id' : intent_request.get('userId')
+             }
+        i_data = check_item_exists( global_vars.get('region_name'), global_vars.get('ddb_table_name'), slots['slot_one_svc'] )
+        print(i_data)
+        if not i_data.get('item_exists'):
+            loop.run_until_complete( create_ddb_item(global_vars.get('region_name'), global_vars.get('ddb_table_name'), item) )
+        else:
+            # To avoid adding the same user_ids & utterances again, check
+            for i in i_data.get('Items')[0].get('utterances')['L']:
+                if item.get('utterance') in i['S']:
+                    item.pop('utterance', None)
+                    break
+            for i in i_data.get('Items')[0].get('user_ids')['L']:
+                if item.get('user_id') in i['S']:
+                    item.pop('user_id', None)
+                    break
+            loop.run_until_complete( update_ddb_item(global_vars.get('region_name'), global_vars.get('ddb_table_name'), item) )
+        """
+        output_session_attributes = intent_request['sessionAttributes'] if intent_request['sessionAttributes'] is not None else {}
+                if flower_type is not None:
+                    output_session_attributes['Price'] = len(flower_type) * 5  # Elegant pricing model
+        """
+    loop.close()
+    
+    # Begin searching for the search_query(needle) in the haystack
+    v_ids = []
+    haystack = read_from_file( global_vars.get('faq_db_fname') )
+    for i in haystack['vids']:
+        if slots['slot_one_svc'].lower() in i[0]['title'].lower():
+            # resp['id_lst'].append( {'title': i[0]['title'] , 'id': i[0]['vid_id'] } )
+            num = 0
+            denom = 0
+            if 'likeCount' in i[0]['statistics'] and not None:
+                num = int( i[0]['statistics'].get('likeCount') )
+            if 'dislikeCount' in i[0]['statistics'] and not None:
+                denom = int( i[0]['statistics'].get('dislikeCount') )
+            popularity = int( safe_div(num, (num+denom)) * 100 )
+            v_ids.append( { 'title': i[0]['title'] , 
+                            'vid_id': i[0]['vid_id'], 
+                            'view_count' : int( i[0]['statistics'].get('viewCount') ), 
+                            'popularity': popularity,
+                            'thumbnails' : i[0].get('thumbnails')
+                            }
+                        )
+            # print("{0:.0%}".format(1./3))
+
+    if v_ids:
+        # Sorting the videos to find the most suitable one
+        """
+        Sort Criteria 1: ViewCount - Top 10 filtered
+        Sort Criteria 2: Popularity - Top 3 Returned
+            Popularity: ( LikeCount / TotalFeedback )
+        """
+        filter_1 = 10
+        filter_2 = 5
+        s1_v_ids = sorted(v_ids, key=itemgetter('view_count'), reverse=True)[:filter_1]
+        s2_v_ids = sorted(s1_v_ids, key=itemgetter('popularity'), reverse=True)[:filter_2]
+
+    return close_w_card(
+        output_session_attributes,
+        'Fulfilled',
+        {'contentType': 'PlainText', 'content': 'Have a look at these demonstrations from #Valaxy'},
+        s2_v_ids
+    )    
