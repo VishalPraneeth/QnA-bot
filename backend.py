@@ -28,7 +28,7 @@ def set_global_vars():
         global_vars['tag_key']              = "Valaxy-HelpDesk-Bot"
         global_vars['faq_db_fname']         = "./data/val.json"
         global_vars['ddb_table_name']       = "valaxy-butler-queries"
-        global_vars['update_ddb']           = True
+        global_vars['update_ddb']           = False
         global_vars['status']               = True
     except Exception as e:
         logger.error(f"ERROR: {str(e)}")
