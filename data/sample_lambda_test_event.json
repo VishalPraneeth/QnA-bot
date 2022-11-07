@@ -3,7 +3,7 @@
     "messageVersion": "1.0",
     "invocationSource": "FulfillmentCodeHook",
     "userId": "recpfpf5hkvnmn3fx0ew9gtrga03q8ek",
-    "requestAttributes": {},
+    "requestAttributes": "None",
     "bot": {
       "name": "valaxy_helpdesk_bot",
       "alias": "$LATEST",
@@ -26,7 +26,7 @@
         }
       },
       "confirmationStatus": "None",
-      "sourceLexNLUIntentInterpretation": {} 
+      "sourceLexNLUIntentInterpretation": "None"
     },
     "inputTranscript": "How to launch an EC2"
   }
