@@ -65,3 +65,27 @@ def elicit_slot(session_attributes, intent_name, slots, slot_to_elicit, message)
             'message': message
         }
     }
+
+
+def elicit_slot_w_response(session_attributes, intent_name, slots, slot_to_elicit, message, response_card):
+    return {
+        'sessionAttributes': session_attributes,
+        'dialogAction': {
+            'type': 'ElicitSlot',
+            'intentName': intent_name,
+            'slots': slots,
+            'slotToElicit': slot_to_elicit,
+            'message': message,
+            'responseCard': response_card
+        }
+    }
+
+
+def delegate(session_attributes, slots):
+    return {
+        'sessionAttributes': session_attributes,
+        'dialogAction': {
+            'type': 'Delegate',
+            'slots': slots
+        }
+    }
