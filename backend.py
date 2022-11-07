@@ -247,6 +247,7 @@ def get_video_id_intent(global_vars: dict, intent_request: dict) -> dict:
         # Insert / Update Dynamodb about search query
         item = { 'search_query': slots['slot_one_svc'].lower(),
                  'utterance': intent_request.get('inputTranscript'),
+                #  deepcode ignore AttributeLoadOnNone: <please specify a reason of ignoring this>
                  'user_id' : intent_request.get('userId')
              }
         i_data = check_item_exists( global_vars.get('region_name'), global_vars.get('ddb_table_name'), slots['slot_one_svc'] )
